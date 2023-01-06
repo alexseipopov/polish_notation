@@ -4,6 +4,7 @@ s21_literal *s21_init(struct data data) {
     s21_literal *target = (s21_literal *)calloc(1, sizeof(s21_literal));
     target->next = NULL;
     target->data = data;
+    printf("put val %llf\n", target->data.value);
     return target;
 }
 
@@ -32,6 +33,14 @@ int main(void) {
     //     free(target);
     //     target = copy->next;
     // }
-    char *string = "2 + 4 - 34 sin";
-    parse(string);
+    s21_literal *root_numbers = NULL;
+    s21_literal *root_operands = NULL;
+    char *string = "2 + 4E1e3 - 34.5 sin cos log mod";
+    parse(string, root_numbers, root_operands);
+    printf("%lf\n", atof("4E3"));
+    s21_literal *cp = root_numbers;
+    while (cp != NULL) {
+        printf("%llf -> ", cp->data.value);
+        cp = cp->next;
+    }
 }
