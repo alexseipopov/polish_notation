@@ -33,14 +33,29 @@ int main(void) {
     //     free(target);
     //     target = copy->next;
     // }
+
     s21_literal *root_numbers = NULL;
     s21_literal *root_operands = NULL;
-    char *string = "2 + 4E1e3 - 34.5 sin cos log mod";
-    parse(string, root_numbers, root_operands);
-    printf("%lf\n", atof("4E3"));
-    s21_literal *cp = root_numbers;
-    while (cp != NULL) {
-        printf("%llf -> ", cp->data.value);
-        cp = cp->next;
-    }
+    struct data data;
+    data.value = 10;
+    root_numbers = s21_push(data, root_numbers);
+    s21_pop(root_numbers);
+    char *string = "cos 30";
+    string = to_lower(string);
+    parse(string, &root_numbers, &root_operands);
+    root_numbers->data.action(root_numbers, root_numbers);
+    // printf("%lf\n", atof("4E-2"));
+    // print_stack(root_numbers);
+    // string = to_lower(string);
+    // printf("%s\n", string);
+    // s21_literal *root = NULL;
+    // struct data data = {0};
+    // for (int i = 0; i < 10; i++) {
+    //     data.value = i;
+    //     root = s21_push(data, root);
+    // }
+    // for (int i = 0; i < 5; i++) {
+    //     root = s21_pop(root);
+    // }
+    // print_stack(root);
 }
