@@ -9,6 +9,7 @@ void print_stack(s21_literal *root) {
             printf("------------------\n");
             printf("|                |\n");
             printf("| val = %.6lf |\n", copy->data.value);
+            printf("| val = %8d |\n", copy->data.id);
             printf("|                |\n");
             printf("------------------\n");
             copy = copy->next;
@@ -31,4 +32,30 @@ char *to_lower(char *target) {
     }
     str[len] = '\0';
     return str;
+}
+
+int check_2_values(s21_literal *numbers) {
+    int status = (numbers && numbers->next) ? SUCCESS : FAILURE;
+    return status;
+}
+
+int check_1_values(s21_literal *numbers) {
+    int status = (numbers) ? SUCCESS : FAILURE;
+    return status;
+}
+
+void transform_list_unar(struct data data, s21_literal **numbers,
+                         s21_literal **operators) {
+    *numbers = s21_pop(*numbers);
+    *operators = s21_pop(*operators);
+    *numbers = s21_push(data, *numbers);
+}
+
+void transform_list_binar(struct data data, s21_literal **numbers,
+                          s21_literal **operators) {
+    for (int i = 0; i < 2; i++) {
+        *numbers = s21_pop(*numbers);
+    }
+    *operators = s21_pop(*operators);
+    *numbers = s21_push(data, *numbers);
 }

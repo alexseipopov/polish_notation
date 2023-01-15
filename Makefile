@@ -1,5 +1,5 @@
 CC=gcc
-FLAGS=-g #-Wall -Wextra -Werror
+FLAGS=-g -Wall -Wextra -Werror
 SRC=$(wildcard s21_*.c)
 OBJ=$(SRC:*.c=*.o)
 LIB_NAME=s21_polish_notation
