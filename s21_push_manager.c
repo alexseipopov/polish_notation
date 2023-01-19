@@ -3,6 +3,7 @@
 int push_operator_manager(struct data data, s21_literal **numbers,
                           s21_literal **operators) {
     int status = SUCCESS;
+    // static int last_type = 0;
     if (data.priority == 0) {
         status = data.action(numbers, operators);
     } else {

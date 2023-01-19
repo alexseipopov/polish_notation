@@ -59,3 +59,11 @@ void transform_list_binar(struct data data, s21_literal **numbers,
     *operators = s21_pop(*operators);
     *numbers = s21_push(data, *numbers);
 }
+
+void set_data_struct(struct data *data, int priority, double value, int type,
+                     int (*action)(s21_literal **, s21_literal **)) {
+    data->priority = priority;
+    data->value = value;
+    data->type = type;
+    data->action = action;
+}
