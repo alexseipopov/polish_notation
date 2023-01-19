@@ -154,15 +154,16 @@ int s21_do_pow(s21_literal **numbers, s21_literal **operators) {
 
 int open_bracket(s21_literal **numbers, s21_literal **operators) {
     int status = SUCCESS;
-    if (*numbers && *operators &&
-        ((*numbers)->data.id > (*operators)->data.id)) {
-        struct data data = {0};
+    struct data data = {0};
+    if ((*numbers && *operators &&
+         ((*numbers)->data.id > (*operators)->data.id)) ||
+        (!*operators && *numbers)) {
         data.action = &s21_do_mult;
         data.priority = 2;
         status = push_operator_manager(data, numbers, operators);
     }
-    // data.priority = 0;
-    // *operators = s21_push(data, *operators);
+    data.priority = 0;
+    *operators = s21_push(data, *operators);
     return status;
 }
 

@@ -3,8 +3,8 @@
 int main(void) {
     s21_literal *root_numbers = NULL;
     s21_literal *root_operands = NULL;
-    double x = 0;
-    char *string = "(2 + 3)(10)";
+    double x = 33;
+    char *string = "sin(90 / 57 ^ ^)*10";
     string = to_lower(string);
     parse(string, &root_numbers, &root_operands, x);
     while (root_operands != NULL) {

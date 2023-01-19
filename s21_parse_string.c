@@ -70,7 +70,8 @@ char *parse_variable(char *symbol, int *status, s21_literal **root_numbers,
         struct data data = {0};
         data.value = var;
         *root_numbers = s21_push(data, *root_numbers);
-        *status = 1;
+        *status = SUCCESS;
+        symbol++;
     }
     return symbol;
 }
