@@ -1,17 +1,16 @@
 #include "s21_polish.h"
 
 int main(void) {
-    s21_literal *root_numbers = NULL;
-    s21_literal *root_operands = NULL;
-    double x = 33;
-    char *string = "1e5 + 20.4 - 10 * 10 / 10";
+    unit *result = NULL;
+    unit *root_operands = NULL;
+    // double x = 33;
+    char *string = "9x + 1";
     string = to_lower(string);
-    parse(string, &root_numbers, &root_operands, x);
-    while (root_operands != NULL) {
-        counter(&root_numbers, &root_operands);
+    int status = parse(string, &result, &root_operands);
+    if (status == SUCCESS) {
+        printf("%lf\n", result->data.value);
+        print_stack(result);
+    } else {
+        print_problem(status);
     }
-    // root_operands->data.action(&root_numbers, &root_numbers);
-    printf("%lf\n", root_numbers->data.value);
-    print_stack(root_numbers);
-    // printf("%lf\n", atof("1e2"));
 }

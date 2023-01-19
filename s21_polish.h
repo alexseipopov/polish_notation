@@ -11,44 +11,55 @@
 #define LOCAL_STATUS_OFF 0
 #define LOCAL_STATUS_ON 1
 
+// servise statuses
+#define NEED_UNSTACK 1
+
 // statuses
 #define SUCCESS 0
 #define PARSING_ERROR 1
 #define FAILURE 1
 #define PARSING_NUMBER_ERROR 2
 #define EXTRA_ILLIGAL_SYMBOL 3
-#define MATH_ERROR 4
+#define FORGOT_OPERATOR 4
+#define MISSING_OPERATOR 5
+#define CHANGE_VAR_POSITION 6
+#define NOT_FOUND_OPEN_BRACKET 7
+#define NOT_ENOUGHT_NUMBERS 8
+#define SOMETHING_WRONG 9
+#define HAVE_VAR 10  // продумать его в другое место
 
-typedef struct s21_literal s21_literal;
+typedef struct unit unit;
 
 struct data {
+    // TODO удалить id он вроде не нужен после статика а менеджере
     int id;
     int priority;
     double value;
     int type;
-    int (*action)(s21_literal **, s21_literal **);
+    char symbol;
+    int (*action)(unit **, unit **);
 };
 
-struct s21_literal {
+struct unit {
     struct data data;
-    struct s21_literal *next;
+    struct unit *next;
 };
 
 enum types { BRO, BRC, FUNC, NUM, OP, UOP, BOP, VAR };
 
-char *parse_num(char *symbol, int *status, s21_literal **root_numbers);
+char *parse_num(char *symbol, int *status, unit **result,
+                unit **stack_operator);
 
-char *parse_string(char *symbol, int *status, s21_literal **root_numbers,
-                   s21_literal **root_operators);
+char *parse_string(char *symbol, int *status, unit **result,
+                   unit **stack_operator);
 
-char *parse_operator(char *symbol, int *status, s21_literal **root_numbers,
-                     s21_literal **root_operators);
+char *parse_operator(char *symbol, int *status, unit **result,
+                     unit **stack_operator);
 
-void parse(char *str, s21_literal **root_numbers, s21_literal **root_operators,
-           double var);
+int parse(char *str, unit **result, unit **stack_operator);
 
-char *parse_bracket(char *symbol, int *status, s21_literal **root_numbers,
-                    s21_literal **root_operators);
+char *parse_bracket(char *symbol, int *status, unit **result,
+                    unit **stack_operator);
 
 /*******************************/
 /*                             */
@@ -66,7 +77,7 @@ char *parse_bracket(char *symbol, int *status, s21_literal **root_numbers,
  *
  * @return pointer to new list (new last elemet inside it)
  */
-s21_literal *s21_push(struct data data, s21_literal *root);
+unit *s21_push(struct data data, unit *root);
 
 /**
  * Function for remove last element feom list and freeing memory.
@@ -74,7 +85,7 @@ s21_literal *s21_push(struct data data, s21_literal *root);
  * @param root pointer to last element of list
  * @return pointer to new list (new last elemet inside it)
  */
-s21_literal *s21_pop(s21_literal *root);
+unit *s21_pop(unit *root);
 
 /*******************************/
 /*                             */
@@ -82,7 +93,7 @@ s21_literal *s21_pop(s21_literal *root);
 /*                             */
 /*******************************/
 
-void print_stack(s21_literal *root);
+void print_stack(unit *root);
 char *to_lower(char *target);
 
 /**
@@ -91,15 +102,16 @@ char *to_lower(char *target);
  * @param numbers pointer to list for check
  * @return status: 0 - ok, 1 - failure
  */
-int check_2_values(s21_literal *numbers);
-int check_1_values(s21_literal *numbers);
+int check_2_values(unit *numbers);
+int check_1_values(unit *numbers);
 
-void transform_list_unar(struct data data, s21_literal **numbers,
-                         s21_literal **operators);
-void transform_list_binar(struct data data, s21_literal **numbers,
-                          s21_literal **operators);
+void transform_list_unar(struct data data, unit **numbers, unit **operators);
+void transform_list_binar(struct data data, unit **numbers, unit **operators);
 void set_data_struct(struct data *data, int priority, double value, int type,
-                     int (*action)(s21_literal **, s21_literal **));
+                     int (*action)(unit **, unit **));
+
+int unstack(struct data data, unit **numbers, unit **operators);
+void print_problem(int status);
 
 /*******************************/
 /*                             */
@@ -107,24 +119,32 @@ void set_data_struct(struct data *data, int priority, double value, int type,
 /*                             */
 /*******************************/
 
-int s21_do_cos(s21_literal **numbers, s21_literal **operators);
-int s21_do_sin(s21_literal **numbers, s21_literal **operators);
-int s21_do_tan(s21_literal **numbers, s21_literal **operators);
-int s21_do_acos(s21_literal **numbers, s21_literal **operators);
-int s21_do_asin(s21_literal **numbers, s21_literal **operators);
-int s21_do_atan(s21_literal **numbers, s21_literal **operators);
-int s21_do_sqrt(s21_literal **numbers, s21_literal **operators);
-int s21_do_ln(s21_literal **numbers, s21_literal **operators);
-int s21_do_log(s21_literal **numbers, s21_literal **operators);
+int unar_action(unit **numbers, unit **operators, double (*action)(double));
+int binar_action(unit **numbers, unit **operators,
+                 double (*action)(double, double));
 
-int s21_do_plus(s21_literal **numbers, s21_literal **operators);
-int s21_do_minus(s21_literal **numbers, s21_literal **operators);
-int s21_do_div(s21_literal **numbers, s21_literal **operators);
-int s21_do_mult(s21_literal **numbers, s21_literal **operators);
-int s21_do_mod(s21_literal **numbers, s21_literal **operators);
-int s21_do_pow(s21_literal **numbers, s21_literal **operators);
-int open_bracket(s21_literal **numbers, s21_literal **operators);
-int close_bracket(s21_literal **numbers, s21_literal **operators);
+int unar_minus(unit **numbers, unit **operators);
+int unar_plus(unit **numbers, unit **operators);
+int s21_do_cos(unit **numbers, unit **operators);
+int s21_do_sin(unit **numbers, unit **operators);
+int s21_do_tan(unit **numbers, unit **operators);
+int s21_do_acos(unit **numbers, unit **operators);
+int s21_do_asin(unit **numbers, unit **operators);
+int s21_do_atan(unit **numbers, unit **operators);
+int s21_do_sqrt(unit **numbers, unit **operators);
+int s21_do_ln(unit **numbers, unit **operators);
+int s21_do_log(unit **numbers, unit **operators);
+
+double my_plus(double first, double second);
+double my_minus(double first, double second);
+double my_mult(double first, double second);
+double my_div(double first, double second);
+int s21_do_plus(unit **numbers, unit **operators);
+int s21_do_minus(unit **numbers, unit **operators);
+int s21_do_div(unit **numbers, unit **operators);
+int s21_do_mult(unit **numbers, unit **operators);
+int s21_do_mod(unit **numbers, unit **operators);
+int s21_do_pow(unit **numbers, unit **operators);
 
 /*******************************/
 /*                             */
@@ -132,6 +152,15 @@ int close_bracket(s21_literal **numbers, s21_literal **operators);
 /*                             */
 /*******************************/
 
-int push_operator_manager(struct data data, s21_literal **numbers,
-                          s21_literal **operators);
-int counter(s21_literal **numbers, s21_literal **operators);
+int push_manager(struct data data, unit **numbers, unit **operators);
+int push_number(struct data data, unit **numbers, int last_type);
+int push_open_bracket(struct data data, unit **numbers, unit **operators,
+                      int last_type);
+int action_close_bracket(unit **numbers, unit **operators);
+int push_func(struct data data, unit **numbers, unit **operators,
+              int last_type);
+int push_operator(struct data *data, unit **numbers, unit **operators,
+                  int last_type);
+int push_variable(struct data data, unit **numbers, unit **operators,
+                  int last_type);
+int push_manager(struct data data, unit **numbers, unit **operators);

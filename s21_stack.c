@@ -1,8 +1,8 @@
 #include "s21_polish.h"
 
-s21_literal *s21_push(struct data data, s21_literal *root) {
+unit *s21_push(struct data data, unit *root) {
     static int id = 0;
-    s21_literal *new = (s21_literal *)calloc(1, sizeof(s21_literal));
+    unit *new = (unit *)calloc(1, sizeof(unit));
     data.id = id;
     new->data = data;
     new->next = root != NULL ? root : NULL;
@@ -10,8 +10,8 @@ s21_literal *s21_push(struct data data, s21_literal *root) {
     return new;
 }
 
-s21_literal *s21_pop(s21_literal *root) {
-    s21_literal *target = root;
+unit *s21_pop(unit *root) {
+    unit *target = root;
     if (root != NULL) {
         target = root->next;
         free(root);
