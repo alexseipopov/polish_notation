@@ -3,13 +3,15 @@
 int main(void) {
     unit *result = NULL;
     unit *root_operands = NULL;
-    // double x = 33;
-    char *string = "9x + 1";
+    double x = 33;
+    double res;
+    char *string = "sin 4 + 3 /2 - sqrt(4) +-1 ";
     string = to_lower(string);
     int status = parse(string, &result, &root_operands);
     if (status == SUCCESS) {
-        printf("%lf\n", result->data.value);
-        print_stack(result);
+        resolve_struct(&result, x, &res);
+        printf("%lf\n", res);
+        // print_stack(result);
     } else {
         print_problem(status);
     }

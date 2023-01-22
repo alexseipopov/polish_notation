@@ -176,3 +176,7 @@ int push_operator(struct data *data, unit **numbers, unit **operators,
 int push_variable(struct data data, unit **numbers, unit **operators,
                   int last_type);
 int push_manager(struct data data, unit **numbers, unit **operators);
+
+int resolve_struct(unit **numbers, double variable, double *res);
+int check_possible_push(struct data data, unit **operators);
+int resolve_lists(unit **result, unit **stack_operator);
