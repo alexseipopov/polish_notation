@@ -98,6 +98,7 @@ char *parse_operator(char *symbol, int *status, unit **result,
             set_data_struct(&data, (i + 4) / 3, 0, OP, func[i]);
             *status = push_manager(data, result, stack_operator);
             symbol = symbol + strlen(operator[i]);
+            break;
         }
     }
     return symbol;
@@ -149,6 +150,7 @@ int resolve_lists(unit **result, unit **stack_operator) {
 
 int parse(char *str, unit **result, unit **stack_operator) {
     int status = SUCCESS;
+    reset_last_type();
     while (*str != '\0' && status == SUCCESS) {
         status = PARSING_ERROR;
         str = parse_string(str, &status, result, stack_operator);
@@ -166,6 +168,17 @@ int parse(char *str, unit **result, unit **stack_operator) {
     }
     if (status == SUCCESS) {
         status = resolve_lists(result, stack_operator);
+    }
+    return status;
+}
+
+int s21_solve_result(char *target, double variable, double *res) {
+    unit *result = NULL;
+    unit *root_operands = NULL;
+    target = to_lower(target);
+    int status = parse(target, &result, &root_operands);
+    if (status == SUCCESS) {
+        status = resolve_struct(&result, variable, res);
     }
     return status;
 }

@@ -180,3 +180,5 @@ int push_manager(struct data data, unit **numbers, unit **operators);
 int resolve_struct(unit **numbers, double variable, double *res);
 int check_possible_push(struct data data, unit **operators);
 int resolve_lists(unit **result, unit **stack_operator);
+int s21_solve_result(char *target, double variable, double *res);
+void reset_last_type();

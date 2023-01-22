@@ -64,14 +64,21 @@ int check_possible_push(struct data data, unit **operators) {
 int push_operator(struct data *data, unit **numbers, unit **operators,
                   int last_type) {
     int status = SUCCESS;
-    if ((data->symbol == '+' || data->symbol == '-') &&
-        (last_type == -1 || last_type == BRO || last_type == UOP ||
-         last_type == BOP)) {
+    if ((data->symbol == '+') && (last_type == -1 || last_type == BRO ||
+                                  last_type == UOP || last_type == BOP)) {
         data->type = UOP;
-        if (data->symbol == '-')
-            data->action = &unar_minus;
-        else
-            data->action = &unar_plus;
+        data->action = &unar_plus;
+        data->priority = 5;
+    } else if (data->symbol == '-') {
+        if (!(last_type == -1 || last_type == BRO || last_type == UOP ||
+              last_type == BOP)) {
+            struct data my_data = {0};
+            my_data.symbol = '+';
+            set_data_struct(&my_data, 1, 0, OP, &s21_do_plus);
+            status = push_manager(my_data, numbers, operators);
+        }
+        data->type = UOP;
+        data->action = &unar_minus;
         data->priority = 5;
     } else {
         data->type = BOP;
@@ -114,9 +121,13 @@ int push_variable(struct data data, unit **numbers, unit **operators,
 //     return status;
 // }
 
+static int last_type;
+
+void reset_last_type() { last_type = -1; }
+
 int push_manager(struct data data, unit **numbers, unit **operators) {
     int status = SUCCESS;
-    static int last_type = -1;
+    // last_type = -1;
     if (data.type == NUM)
         status = push_number(data, numbers, last_type);
     else if (data.type == BRO)

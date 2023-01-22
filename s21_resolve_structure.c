@@ -25,10 +25,10 @@ int resolve_struct(unit **numbers, double variable, double *res) {
         status = parse_element(*numbers, &result, &stack, variable);
         *numbers = s21_pop(*numbers);
     }
-    if (status == SUCCESS) {
+    if (result && status == SUCCESS) {
         // status = resolve_lists(&result, &stack);
-        while (stack) {
-            stack->data.action(&result, &stack);
+        while (stack && status == SUCCESS) {
+            status = stack->data.action(&result, &stack);
         }
         *res = result->data.value;
         result = s21_pop(result);
