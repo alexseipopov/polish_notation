@@ -83,6 +83,7 @@ int unstack(struct data data, unit **numbers, unit **operators) {
     }
     return status;
 }
+
 void print_problem(int status) {
     if (status == 2)
         printf("Проблема в парсинге чисел");

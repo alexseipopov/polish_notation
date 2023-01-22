@@ -95,6 +95,7 @@ int push_variable(struct data data, unit **numbers, unit **operators,
         struct data my_data = {0};
         set_data_struct(&my_data, 2, 0, OP, &s21_do_mult);
         status = push_manager(my_data, numbers, operators);
+        *numbers = s21_push(data, *numbers);
     } else {
         *numbers = s21_push(data, *numbers);
     }

@@ -56,6 +56,18 @@ char *parse_string(char *symbol, int *status, unit **result,
 char *parse_operator(char *symbol, int *status, unit **result,
                      unit **stack_operator);
 
+/**
+ * @brief Entry function for making linked-list
+ * In simple case (withoutt variable[-s]) return only onse number in
+ * linked-list, available on `result` pointer In case with variables - function
+ * return linked list of simplified input data for next using in calculate the
+ * answer or plotting
+ *
+ * @param str pointer to origin input string
+ * @param result poinrer on pointer to root of linked-list. Will contains
+ * `answer` of this function
+ * @param
+ */
 int parse(char *str, unit **result, unit **stack_operator);
 
 char *parse_bracket(char *symbol, int *status, unit **result,
