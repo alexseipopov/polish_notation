@@ -1,4 +1,4 @@
-CC=gcc
+CC=gcc-12
 FLAGS=-g -Wall -Wextra -Werror
 SRC=$(wildcard s21_*.c)
 OBJ=$(SRC:*.c=*.o)

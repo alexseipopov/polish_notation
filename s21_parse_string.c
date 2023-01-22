@@ -55,12 +55,14 @@ char *parse_num(char *symbol, int *status, unit **result,
     int local_status = LOCAL_STATUS_OFF;
     symbol = parse_hex(symbol, &local_status, str, &have_digit);
     symbol = parce_dec(symbol, &local_status, str, &have_digit);
-    if (local_status == LOCAL_STATUS_ON && have_digit) {
-        struct data data = {0};
-        set_data_struct(&data, 0, atof(str), NUM, NULL);
-        *status = push_manager(data, result, stack_operator);
-    } else if (!have_digit && local_status) {
-        *status = PARSING_NUMBER_ERROR;
+    if (*status != SUCCESS) {
+        if (local_status == LOCAL_STATUS_ON && have_digit) {
+            struct data data = {0};
+            set_data_struct(&data, 0, atof(str), NUM, NULL);
+            *status = push_manager(data, result, stack_operator);
+        } else if (!have_digit && local_status) {
+            *status = PARSING_NUMBER_ERROR;
+        }
     }
     free(str);
     return symbol;
@@ -73,7 +75,7 @@ char *parse_string(char *symbol, int *status, unit **result,
     int (*func[9])(unit **, unit **) = {
         &s21_do_cos,  &s21_do_sin,  &s21_do_tan, &s21_do_acos, &s21_do_asin,
         &s21_do_atan, &s21_do_sqrt, &s21_do_ln,  &s21_do_log};
-    for (int i = 0; i < 9; i++) {
+    for (int i = 0; i < 9 && *status == SUCCESS; i++) {
         if (strstr(symbol, symbolic[i]) == symbol) {
             struct data data = {0};
             set_data_struct(&data, 4, 0, FUNC, func[i]);
@@ -91,7 +93,7 @@ char *parse_operator(char *symbol, int *status, unit **result,
     int (*func[6])(unit **, unit **) = {&s21_do_plus, &s21_do_minus,
                                         &s21_do_div,  &s21_do_mult,
                                         &s21_do_mod,  &s21_do_pow};
-    for (int i = 0; i < 6; i++) {
+    for (int i = 0; i < 6 && *status == SUCCESS; i++) {
         if (strstr(symbol, operator[i]) == symbol) {
             struct data data = {0};
             data.symbol = (*symbol == '+' || *symbol == '-') ? *symbol : '\0';
@@ -106,7 +108,7 @@ char *parse_operator(char *symbol, int *status, unit **result,
 
 char *parse_variable(char *symbol, int *status, unit **result,
                      unit **stack_operator) {
-    if (strstr(symbol, "x") == symbol) {
+    if (strstr(symbol, "x") == symbol && *status == SUCCESS) {
         struct data data = {0};
         set_data_struct(&data, 0, 0, VAR, NULL);
         *status = push_manager(data, result, stack_operator);
@@ -120,7 +122,7 @@ char *parse_bracket(char *symbol, int *status, unit **result,
     char brs[2] = {'(', ')'};
     int brs_type[2] = {BRO, BRC};
     // int (*func[2])(unit **, unit **) = {&open_bracket, &close_bracket};
-    for (int i = 0; i < 2; i++) {
+    for (int i = 0; i < 2 && *status == SUCCESS; i++) {
         if (strchr(symbol, brs[i]) == symbol) {
             struct data data = {0};
             set_data_struct(&data, 0, 0, brs_type[i], NULL);
